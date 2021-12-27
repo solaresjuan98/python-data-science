@@ -47,7 +47,7 @@ if upload_file is not None:
 
         # Deaths by state
         st.subheader("Deaths by state")
-        data['date'] = pd.to_datetime(data.date, format="%Y-%m-%d")
+        data['date'] = pd.to_datetime(data.date, format="%m/%d/%Y")
         data.index = data['date']
         plt.plot(data['death'], label="Covid deaths history")
         st.pyplot()
@@ -62,7 +62,7 @@ if upload_file is not None:
         nydf = data[data.state.isin(ny)]
 
         # format date
-        flt['date'] = pd.to_datetime(flt.date, format="%Y-%m-%d")
+        flt['date'] = pd.to_datetime(flt.date, format="%m/%d/%Y")  # %Y-%m-%d
         flt.index = flt['date']
 
         st.subheader("Deaths in California")
@@ -94,34 +94,43 @@ if upload_file is not None:
 
         # fig = px.bar(df, x="Product", y=[
         #     "Comfort", "Sound", "Calls"], barmode='group', height=400)
-        # # st.dataframe(df) # if need to display dataframe
+        # st.dataframe(df) # if need to display dataframe
         # st.plotly_chart(fig)
-        #print(flt['death'].to_numpy())
-        #arr = pd.array(flt['death'])
-        #print(arr)
-        
+
+        st.subheader("California / New York Deaths")
+        st.set_option('deprecation.showPyplotGlobalUse', False)
         plotdata = pd.DataFrame({
-            "California":flt['death'].sum() ,
-            #"New York": pd.array(nydf['death'])
+            "Deaths": [flt['death'].sum(), nydf['death'].sum()],
         },
-            index=["California"]
+            index=["California", "New york"]
         )
 
         plotdata.plot(kind="bar")
-        #plt.title("Mince Pie Consumption Study")
-        #plt.xlabel("Family Member")
-        #plt.ylabel("Pies Consumed")
+        plt.title("Covid deaths California and New york")
         st.pyplot()
 
-# cm = pd.DataFrame(
-#     [["California", 1, 2], ["New York", 4, 5]],
-#     columns=['State', 'Positives California', 'Positives New York']
-# )
+        
 
-# fig = px.bar(cm, x="State", y=[
-#              'Positives California', 'Positives New York'], barmode='group', height=400)
-# st.plotly_chart(fig)
+        st.subheader("California Deaths vs Positive")
+        plotdata = pd.DataFrame({
+            "Positive": [flt['positive'].sum(), nydf['positive'].sum()],
+            "Death": [flt['death'].sum(), nydf['death'].sum()]
+        },
+            index=["California", "New York"]
+        )
+        plotdata.plot(kind="bar")
+        #plt.title("Covid deaths California and New york")
+        st.pyplot()
 
+        ## Modify y-axis size
+        # plt.plot(range(0, 10))
+        # scl_factor = 10**6
+        # xmin, xmax = plt.xlim()
+        # ymin, ymax = plt.ylim()
+
+        # plt.xlim(xmin * scl_factor, xmax * scl_factor)
+        # plt.ylim(ymin * scl_factor, ymax * scl_factor)
+        # st.pyplot()
 
 else:
     st.markdown("the file is empty or invalid, please upload a valid file")
